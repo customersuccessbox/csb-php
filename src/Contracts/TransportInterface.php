@@ -8,8 +8,10 @@ interface TransportInterface
     /**
      * Add new log entry to the queue.
      *
-     * @param array $log
+     * @param string $uri
+     * @param array  $data
+     *
      * @return TransportInterface
      */
-    public function send($log);
+    public function send($uri, $data);
 }

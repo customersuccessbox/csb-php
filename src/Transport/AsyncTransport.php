@@ -3,7 +3,6 @@
 namespace CSB\Transport;
 
 
-use CSB\Configuration;
 use CSB\Exceptions\CSBException;
 
 /**
@@ -18,73 +17,65 @@ class AsyncTransport extends AbstractAPITransport
      * @var string
      */
     protected $curlPath = 'curl';
-    
+
     /**
      * AsyncTransport constructor.
      *
-     * @param Configuration $configuration
+     * @param string $endpoint
+     * @param string $apiKey
      *
      * @throws CSBException
      */
-    public function __construct($configuration)
+    public function __construct($endpoint, $apiKey)
     {
         if (!function_exists('exec')) {
             throw new CSBException("PHP function 'exec' is not available, is it disabled for security reasons?");
         }
-        
+
         if ('WIN' === strtoupper(substr(PHP_OS, 0, 3))) {
             throw new CSBException('Exec transport is not supposed to work on Windows OS');
         }
-        
-        parent::__construct($configuration);
+
+        parent::__construct($endpoint, $apiKey);
     }
-    
-    /**
-     * List of available transport's options with validation regex.
-     *
-     * ['param-name' => 'regex']
-     *
-     * @return mixed
-     */
-    protected function getAllowedOptions()
-    {
-        return array_merge(parent::getAllowedOptions(), [
-            'curlPath' => '/.+/',
-        ]);
-    }
-    
+
     /**
      * Send a portion of the load to the remote service.
      *
+     * @param string $uri
      * @param string $data
      */
-    public function sendChunk($data)
+    public function send($uri, $data)
     {
+        if (!$this->isEnabled()) {
+            return;
+        }
+
         $cmd = "$this->curlPath -X POST";
-        
+
         foreach ($this->getApiHeaders() as $name => $value) {
             $cmd .= " --header \"$name: $value\"";
         }
-        
+
         $escapedData = $this->escapeArg($data);
-        
-        $cmd .= " --data '$escapedData' '" . $this->Configuration->getEndpoint() . "' --max-time 5";
+
+        $cmd .= " --data '$escapedData' '" . $this->endpoint . $uri . "' --max-time 5";
         if ($this->proxy) {
             $cmd .= " --proxy '$this->proxy'";
         }
-        
+
         // return immediately while curl will run in the background
         $cmd .= ' > /dev/null 2>&1 &';
-        
+
         $output = [];
         exec($cmd, $output, $result);
-        
+
         if ($result !== 0) {
             // curl returned some error
             error_log(date('Y-m-d H:i:s') . " - [Warning] [" . get_class($this) . "] $result ");
         }
     }
-    
+
     /**
      * Escape character to use in the CLI.
      *

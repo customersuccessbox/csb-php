@@ -13,6 +13,25 @@ use DateTime;
 class CSB
 {
     /**
+     * Remote endpoint to send data.
+     *
+     * @var string
+     */
+    protected $endpoint;
+
+    /**
+     * Authentication key.
+     *
+     * @var string
+     */
+    protected $apiKey;
+
+    /**
+     * @var string
+     */
+    protected $transport;
+
+    /**
      * @var string
      */
     protected $accountID;
@@ -21,13 +40,6 @@ class CSB
      * @var string
      */
     protected $userID;
-
-    /**
-     * Agent configuration.
-     *
-     * @var Configuration
-     */
-    protected $Configuration;
 
     /**
      * Transport strategy.
@@ -39,22 +51,107 @@ class CSB
     /**
      * Logger constructor.
      *
-     * @param Configuration $Configuration
+     * @param string $endpoint
+     * @param string $apiKey
+     * @param string $transport
      *
-     * @throws Exceptions\CSBException
+     * @throws CSBException
      */
-    public function __construct(Configuration $Configuration)
+    public function __construct($endpoint, $apiKey, $transport = 'sync')
     {
-        switch ($Configuration->getTransport()) {
+        switch ($transport) {
             case 'async':
-                $this->Transport = new AsyncTransport($Configuration);
+                $this->Transport = new AsyncTransport($endpoint, $apiKey);
                 break;
             default:
-                $this->Transport = new CurlTransport($Configuration);
+                $this->Transport = new CurlTransport($endpoint, $apiKey);
+        }
+    }
+
+    /**
+     * Set CSB $endpoint.
+     *
+     * @param string $value
+     *
+     * @return CSB
+     * @throws CSBException
+     */
+    public function setEndpoint($value)
+    {
+        $value = trim($value);
+
+        if (empty($value)) {
+            throw new CSBException('Invalid Endpoint');
         }
 
-        $this->Configuration = $Configuration;
-        register_shutdown_function([$this, 'flush']);
+        $this->endpoint = $value;
+
+        return $this;
+    }
+
+    /**
+     * Get CSB endpoint.
+     *
+     * @return string
+     */
+    public function getEndpoint()
+    {
+        return $this->endpoint;
+    }
+
+    /**
+     * Verify if api key is well formed.
+     *
+     * @param $value
+     *
+     * @return CSB
+     * @throws CSBException
+     */
+    public function setAPIKey($value)
+    {
+        $value = trim($value);
+
+        if (empty($value)) {
+            throw new CSBException('API key cannot be empty');
+        }
+
+        $this->apiKey = $value;
+
+        return $this;
+    }
+
+    /**
+     * Get current API key.
+     *
+     * @return string
+     */
+    public function getApiKey()
+    {
+        return $this->apiKey;
+    }
+
+    /**
+     * Get current transport method.
+     *
+     * @return string
+     */
+    public function getTransport()
+    {
+        return $this->transport;
+    }
+
+    /**
+     * Set the preferred transport method.
+     *
+     * @param string $transport
+     *
+     * @return CSB
+     */
+    public function setTransport(string $transport)
+    {
+        $this->transport = $transport;
+
+        return $this;
     }
 
     /**
@@ -95,7 +192,7 @@ class CSB
             'timestamp' => date(DateTime::ISO8601),
         ];
 
-        $this->Transport->send($item);
+        $this->Transport->send('/api/v1_1/track', $item);
     }
 
     /**
@@ -145,7 +242,7 @@ class CSB
             'timestamp' => date(DateTime::ISO8601),
         ];
 
-        $this->Transport->send($item);
+        $this->Transport->send('/api/v1_1/account', $item);
     }
 
     /**
@@ -177,7 +274,7 @@ class CSB
             'timestamp' => date(DateTime::ISO8601),
         ];
 
-        $this->Transport->send($item);
+        $this->Transport->send('/api/v1_1/identify', $item);
     }
 
     /**
@@ -221,18 +318,6 @@ class CSB
             'timestamp' => date(DateTime::ISO8601),
         ];
 
-        $this->Transport->send($item);
-    }
-
-    /**
-     * Flush data to the remote platform.
-     */
-    public function flush()
-    {
-        if (!$this->Configuration->isEnabled()) {
-            return;
-        }
-
-        $this->Transport->flush();
+        $this->Transport->send('/api/v1_1/feature', $item);
     }
 }
