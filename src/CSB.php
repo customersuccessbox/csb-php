@@ -59,10 +59,10 @@ class CSB
     {
         switch ($transport) {
             case 'async':
-                $this->Transport = new AsyncTransport($endpoint, $apiKey);
+                return $this->Transport = new AsyncTransport($endpoint, $apiKey);
                 break;
             default:
-                $this->Transport = new CurlTransport($endpoint, $apiKey);
+                return $this->Transport = new CurlTransport($endpoint, $apiKey);
         }
     }
 
@@ -180,6 +180,12 @@ class CSB
         return [$accountID, $userID];
     }
 
+    /**
+     * @param string $event
+     * @param array $properties
+     *
+     * @return bool|TransportInterface
+     */
     private function track($event, $properties)
     {
         $item = [
@@ -192,13 +198,14 @@ class CSB
 
         $item = json_encode($item);
 
-        $this->Transport->send('/api_js/v1_1/track', $item);
+        return $this->Transport->send('/api_js/v1_1/track', $item);
     }
 
     /**
      * @param $accountID
      * @param $userID
      *
+     * @return bool|TransportInterface
      * @throws CSBException
      */
     public function login($accountID, $userID)
@@ -215,7 +222,7 @@ class CSB
             throw new CSBException('Invalid User ID');
         }
 
-        $this->track('User Login', [
+        return $this->track('User Login', [
             'account_id' => $accountID,
             'user_id'    => $userID
         ]);
@@ -225,6 +232,7 @@ class CSB
      * @param string $accountID
      * @param array  $traits
      *
+     * @return bool|TransportInterface
      * @throws CSBException
      */
     public function account($accountID, $traits = [])
@@ -244,7 +252,7 @@ class CSB
 
         $item = json_encode($item);
 
-        $this->Transport->send('/api_js/v1_1/account', $item);
+        return $this->Transport->send('/api_js/v1_1/account', $item);
     }
 
     /**
@@ -252,6 +260,7 @@ class CSB
      * @param string $userID
      * @param array  $traits
      *
+     * @return bool|TransportInterface
      * @throws CSBException
      */
     public function user($accountID, $userID, $traits = [])
@@ -278,20 +287,21 @@ class CSB
 
         $item = json_encode($item);
 
-        $this->Transport->send('/api_js/v1_1/identify', $item);
+        return $this->Transport->send('/api_js/v1_1/identify', $item);
     }
 
     /**
      * @param string|null $accountID
      * @param string|null $userID
      *
+     * @return bool|TransportInterface
      * @throws CSBException
      */
     public function logout($accountID = null, $userID = null)
     {
         [$accountID, $userID] = $this->checkForAccountAndUserID($accountID, $userID);
 
-        $this->track('User Logout', [
+        return $this->track('User Logout', [
             'account_id' => $accountID,
             'user_id'    => $userID
         ]);
@@ -305,6 +315,7 @@ class CSB
      * @param string|null $accountID
      * @param string|null $userID
      *
+     * @return bool|TransportInterface
      * @throws CSBException
      */
     public function feature($productID, $moduleID, $featureID, $total = 1, $accountID = null, $userID = null)
@@ -324,6 +335,6 @@ class CSB
 
         $item = json_encode($item);
 
-        $this->Transport->send('/api_js/v1_1/feature', $item);
+        return $this->Transport->send('/api_js/v1_1/feature', $item);
     }
 }

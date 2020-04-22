@@ -43,11 +43,13 @@ class AsyncTransport extends AbstractAPITransport
      *
      * @param string $uri
      * @param string $data
+     *
+     * @return bool
      */
     public function send($uri, $data)
     {
         if (!$this->isEnabled()) {
-            return;
+            return false;
         }
 
         $cmd = "$this->curlPath -X POST";
@@ -73,6 +75,8 @@ class AsyncTransport extends AbstractAPITransport
             // curl returned some error
             error_log(date('Y-m-d H:i:s') . " - [Warning] [" . get_class($this) . "] $result ");
         }
+
+        return true;
     }
 
     /**

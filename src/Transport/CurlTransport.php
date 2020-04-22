@@ -29,11 +29,13 @@ class CurlTransport extends AbstractAPITransport
      *
      * @param string $uri
      * @param string $data
+     *
+     * @return bool
      */
     public function send($uri, $data)
     {
         if (!$this->isEnabled()) {
-            return;
+            return false;
         }
 
         $headers = [];
@@ -67,5 +69,7 @@ class CurlTransport extends AbstractAPITransport
         }
 
         curl_close($handle);
+
+        return true;
     }
 }
