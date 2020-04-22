@@ -2,7 +2,6 @@
 
 namespace CSB\Contracts;
 
-
 interface TransportInterface
 {
     /**

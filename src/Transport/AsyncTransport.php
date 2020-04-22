@@ -2,7 +2,6 @@
 
 namespace CSB\Transport;
 
-
 use CSB\Exceptions\CSBException;
 
 /**

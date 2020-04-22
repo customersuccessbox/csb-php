@@ -1,8 +1,6 @@
 <?php
 
-
 namespace CSB;
-
 
 use CSB\Contracts\TransportInterface;
 use CSB\Exceptions\CSBException;
@@ -192,7 +190,9 @@ class CSB
             'timestamp' => date(DateTime::ISO8601),
         ];
 
-        $this->Transport->send('/api/v1_1/track', $item);
+        $item = json_encode($item);
+
+        $this->Transport->send('/api_js/v1_1/track', $item);
     }
 
     /**
@@ -227,7 +227,7 @@ class CSB
      *
      * @throws CSBException
      */
-    private function account($accountID, $traits = [])
+    public function account($accountID, $traits = [])
     {
         if (!empty($accountID)) {
             $this->accountID = $accountID;
@@ -242,7 +242,9 @@ class CSB
             'timestamp' => date(DateTime::ISO8601),
         ];
 
-        $this->Transport->send('/api/v1_1/account', $item);
+        $item = json_encode($item);
+
+        $this->Transport->send('/api_js/v1_1/account', $item);
     }
 
     /**
@@ -252,7 +254,7 @@ class CSB
      *
      * @throws CSBException
      */
-    private function user($accountID, $userID, $traits = [])
+    public function user($accountID, $userID, $traits = [])
     {
         if (!empty($accountID)) {
             $this->accountID = $accountID;
@@ -274,7 +276,9 @@ class CSB
             'timestamp' => date(DateTime::ISO8601),
         ];
 
-        $this->Transport->send('/api/v1_1/identify', $item);
+        $item = json_encode($item);
+
+        $this->Transport->send('/api_js/v1_1/identify', $item);
     }
 
     /**
@@ -318,6 +322,8 @@ class CSB
             'timestamp' => date(DateTime::ISO8601),
         ];
 
-        $this->Transport->send('/api/v1_1/feature', $item);
+        $item = json_encode($item);
+
+        $this->Transport->send('/api_js/v1_1/feature', $item);
     }
 }
