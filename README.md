@@ -1,7 +1,9 @@
 ## CSB PHP Package to Send Data to Server
-
+#### Install Package
+```composer log
+composer require csb/php -vvv
+```
 #### Initiate Package
-
 ##### For Laravel, Add this Code to register function of AppServiceProvider.php
 ```php
 $this->app->singleton('csb', function () {
