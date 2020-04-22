@@ -30,7 +30,7 @@ $CSB->login('Account1', 'User1');
 ```
 ##### Logout
 ```php
-$CSB->login('Account1', 'User1');
+$CSB->logout('Account1', 'User1');
 ```
 ##### Account [account($accountID, $traits = [])]
 ```php
