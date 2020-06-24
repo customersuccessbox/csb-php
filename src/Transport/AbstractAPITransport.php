@@ -10,19 +10,19 @@ abstract class AbstractAPITransport implements TransportInterface
      * @var string
      */
     protected $endpoint;
-
+    
     /**
      * @var string
      */
     protected $apiKey;
-
+    
     /**
      * Custom url of the proxy if needed.
      *
      * @var string
      */
     protected $proxy;
-
+    
     /**
      * AbstractApiTransport constructor.
      *
@@ -34,7 +34,7 @@ abstract class AbstractAPITransport implements TransportInterface
         $this->endpoint = $endpoint;
         $this->apiKey   = $apiKey;
     }
-
+    
     /**
      * Send a portion of the load to the remote service.
      *
@@ -44,7 +44,7 @@ abstract class AbstractAPITransport implements TransportInterface
      * @return void
      */
     abstract public function send($uri, $data);
-
+    
     /**
      * @return bool
      */
@@ -54,10 +54,10 @@ abstract class AbstractAPITransport implements TransportInterface
             && empty($this->apiKey)) {
             return false;
         }
-
+        
         return true;
     }
-
+    
     /**
      * @return array
      */

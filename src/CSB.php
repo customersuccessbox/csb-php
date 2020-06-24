@@ -6,6 +6,7 @@ use CSB\Contracts\TransportInterface;
 use CSB\Exceptions\CSBException;
 use CSB\Transport\AsyncTransport;
 use CSB\Transport\CurlTransport;
+use CSB\Transport\EmptyTransport;
 use DateTime;
 
 class CSB
@@ -16,36 +17,36 @@ class CSB
      * @var string
      */
     protected $endpoint;
-
+    
     /**
      * Authentication key.
      *
      * @var string
      */
     protected $apiKey;
-
+    
     /**
      * @var string
      */
     protected $transport;
-
+    
     /**
      * @var string
      */
     protected $accountID;
-
+    
     /**
      * @var string
      */
     protected $userID;
-
+    
     /**
      * Transport strategy.
      *
      * @var TransportInterface
      */
     protected $Transport;
-
+    
     /**
      * Logger constructor.
      *
@@ -57,15 +58,26 @@ class CSB
      */
     public function __construct($endpoint, $apiKey, $transport = 'sync')
     {
+        $this->setEndpoint($endpoint);
+        
+        if ($apiKey != 'phpunit') {
+            $this->setAPIKey($apiKey);
+        } else {
+            $transport = 'phpunit';
+        }
+        
         switch ($transport) {
             case 'async':
                 return $this->Transport = new AsyncTransport($endpoint, $apiKey);
+                break;
+            case 'phpunit':
+                return $this->Transport = new EmptyTransport($endpoint, $apiKey);
                 break;
             default:
                 return $this->Transport = new CurlTransport($endpoint, $apiKey);
         }
     }
-
+    
     /**
      * Set CSB $endpoint.
      *
@@ -77,16 +89,16 @@ class CSB
     public function setEndpoint($value)
     {
         $value = trim($value);
-
+        
         if (empty($value)) {
             throw new CSBException('Invalid Endpoint');
         }
-
+        
         $this->endpoint = $value;
-
+        
         return $this;
     }
-
+    
     /**
      * Get CSB endpoint.
      *
@@ -96,7 +108,7 @@ class CSB
     {
         return $this->endpoint;
     }
-
+    
     /**
      * Verify if api key is well formed.
      *
@@ -108,16 +120,16 @@ class CSB
     public function setAPIKey($value)
     {
         $value = trim($value);
-
+        
         if (empty($value)) {
             throw new CSBException('API key cannot be empty');
         }
-
+        
         $this->apiKey = $value;
-
+        
         return $this;
     }
-
+    
     /**
      * Get current API key.
      *
@@ -127,7 +139,7 @@ class CSB
     {
         return $this->apiKey;
     }
-
+    
     /**
      * Get current transport method.
      *
@@ -137,7 +149,7 @@ class CSB
     {
         return $this->transport;
     }
-
+    
     /**
      * Set the preferred transport method.
      *
@@ -145,13 +157,13 @@ class CSB
      *
      * @return CSB
      */
-    public function setTransport(string $transport)
+    public function setTransport($transport)
     {
         $this->transport = $transport;
-
+        
         return $this;
     }
-
+    
     /**
      * @param string $accountID
      * @param string $userID
@@ -168,7 +180,7 @@ class CSB
                 $accountID = $this->accountID;
             }
         }
-
+        
         if (empty($userID)) {
             if (empty($this->userID)) {
                 throw new CSBException('Please Provide User ID or Use Login Function');
@@ -176,13 +188,13 @@ class CSB
                 $userID = $this->userID;
             }
         }
-
+        
         return [$accountID, $userID];
     }
-
+    
     /**
      * @param string $event
-     * @param array $properties
+     * @param array  $properties
      *
      * @return bool|TransportInterface
      */
@@ -195,12 +207,12 @@ class CSB
             'event'     => $event,
             'timestamp' => date(DateTime::ISO8601),
         ];
-
+        
         $item = json_encode($item);
-
+        
         return $this->Transport->send('/api_js/v1_1/track', $item);
     }
-
+    
     /**
      * @param $accountID
      * @param $userID
@@ -215,19 +227,19 @@ class CSB
         } else {
             throw new CSBException('Invalid Account ID');
         }
-
+        
         if (!empty($userID)) {
             $this->userID = $userID;
         } else {
             throw new CSBException('Invalid User ID');
         }
-
+        
         return $this->track('User Login', [
             'account_id' => $accountID,
             'user_id'    => $userID
         ]);
     }
-
+    
     /**
      * @param string $accountID
      * @param array  $traits
@@ -242,19 +254,19 @@ class CSB
         } else {
             throw new CSBException('Invalid Account ID');
         }
-
+        
         $item = [
             'accountId' => $accountID,
             'type'      => 'account',
             'traits'    => $traits,
             'timestamp' => date(DateTime::ISO8601),
         ];
-
+        
         $item = json_encode($item);
-
+        
         return $this->Transport->send('/api_js/v1_1/account', $item);
     }
-
+    
     /**
      * @param string $accountID
      * @param string $userID
@@ -270,13 +282,13 @@ class CSB
         } else {
             throw new CSBException('Invalid Account ID');
         }
-
+        
         if (!empty($userID)) {
             $this->userID = $userID;
         } else {
             throw new CSBException('Invalid User ID');
         }
-
+        
         $item = [
             'accountId' => $accountID,
             'userId'    => $userID,
@@ -284,12 +296,12 @@ class CSB
             'traits'    => $traits,
             'timestamp' => date(DateTime::ISO8601),
         ];
-
+        
         $item = json_encode($item);
-
+        
         return $this->Transport->send('/api_js/v1_1/identify', $item);
     }
-
+    
     /**
      * @param string|null $accountID
      * @param string|null $userID
@@ -299,14 +311,14 @@ class CSB
      */
     public function logout($accountID = null, $userID = null)
     {
-        [$accountID, $userID] = $this->checkForAccountAndUserID($accountID, $userID);
-
+        list($accountID, $userID) = $this->checkForAccountAndUserID($accountID, $userID);
+        
         return $this->track('User Logout', [
             'account_id' => $accountID,
             'user_id'    => $userID
         ]);
     }
-
+    
     /**
      * @param string      $productID
      * @param string      $moduleID
@@ -320,8 +332,8 @@ class CSB
      */
     public function feature($productID, $moduleID, $featureID, $total = 1, $accountID = null, $userID = null)
     {
-        [$accountID, $userID] = $this->checkForAccountAndUserID($accountID, $userID);
-
+        list($accountID, $userID) = $this->checkForAccountAndUserID($accountID, $userID);
+        
         $item = [
             'accountId' => $accountID,
             'userId'    => $userID,
@@ -332,9 +344,9 @@ class CSB
             'type'      => 'feature',
             'timestamp' => date(DateTime::ISO8601),
         ];
-
+        
         $item = json_encode($item);
-
+        
         return $this->Transport->send('/api_js/v1_1/feature', $item);
     }
 }

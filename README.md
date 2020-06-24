@@ -1,11 +1,11 @@
 ## CSB PHP Package to Send Data to Server
 #### Requirements
 ```shell script
-php >= 7.1
+php >= 5.6
 ```
 #### Install Package
 ```composer log
-composer require csb/php -vvv
+composer require csb/php -vvv -no-dev --no-scripts --optimize-autoloader --ansi
 ```
 #### Initiate Package
 ##### For Laravel, Add this Code to register function of AppServiceProvider.php

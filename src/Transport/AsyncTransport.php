@@ -16,7 +16,7 @@ class AsyncTransport extends AbstractAPITransport
      * @var string
      */
     protected $curlPath = 'curl';
-
+    
     /**
      * AsyncTransport constructor.
      *
@@ -30,14 +30,14 @@ class AsyncTransport extends AbstractAPITransport
         if (!function_exists('exec')) {
             throw new CSBException("PHP function 'exec' is not available, is it disabled for security reasons?");
         }
-
+        
         if ('WIN' === strtoupper(substr(PHP_OS, 0, 3))) {
             throw new CSBException('Exec transport is not supposed to work on Windows OS');
         }
-
+        
         parent::__construct($endpoint, $apiKey);
     }
-
+    
     /**
      * Send a portion of the load to the remote service.
      *
@@ -51,34 +51,34 @@ class AsyncTransport extends AbstractAPITransport
         if (!$this->isEnabled()) {
             return false;
         }
-
+        
         $cmd = "$this->curlPath -X POST";
-
+        
         foreach ($this->getApiHeaders() as $name => $value) {
             $cmd .= " --header \"$name: $value\"";
         }
-
+        
         $escapedData = $this->escapeArg($data);
-
+        
         $cmd .= " --data '$escapedData' '" . $this->endpoint . $uri . "' --max-time 5";
         if ($this->proxy) {
             $cmd .= " --proxy '$this->proxy'";
         }
-
+        
         // return immediately while curl will run in the background
         $cmd .= ' > /dev/null 2>&1 &';
-
+        
         $output = [];
         exec($cmd, $output, $result);
-
+        
         if ($result !== 0) {
             // curl returned some error
             error_log(date('Y-m-d H:i:s') . " - [Warning] [" . get_class($this) . "] $result ");
         }
-
+        
         return true;
     }
-
+    
     /**
      * Escape character to use in the CLI.
      *
