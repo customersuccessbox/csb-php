@@ -10,3 +10,4 @@ docs/*.pyc
 .idea
 .DS_STORE
 ubuntu-bionic-18.04-cloudimg-console.log
+.vagrant
