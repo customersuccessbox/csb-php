@@ -1,7 +1,7 @@
 ## CSB PHP Package to Send Data to Server
 #### Requirements
 ```shell script
-php >= 5.6
+php >= 5.4
 ```
 #### Install Package
 ```composer log
