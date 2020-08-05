@@ -292,7 +292,7 @@ class CSB
         $item = [
             'accountId' => $accountID,
             'userId'    => $userID,
-            'type'      => 'user',
+            'type'      => 'identify',
             'traits'    => $traits,
             'timestamp' => date(DateTime::ISO8601),
         ];
