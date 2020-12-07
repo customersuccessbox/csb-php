@@ -64,12 +64,13 @@ class CurlTransport extends AbstractAPITransport
         $code    = curl_getinfo($handle, CURLINFO_HTTP_CODE);
         $error   = curl_error($handle);
         
-        if (0 !== $errorNo || 200 !== $code) {
-            error_log(date('Y-m-d H:i:s') . " - [Warning] [" . get_class($this) . "] $error - $code $errorNo");
-        }
-        
         curl_close($handle);
         
+        if (0 !== $errorNo || 200 !== $code) {
+            error_log(date('Y-m-d H:i:s') . " - [Warning] [" . get_class($this) . "] $error - $code $errorNo");
+            return false;
+        }
+    
         return true;
     }
 }

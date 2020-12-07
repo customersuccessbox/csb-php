@@ -10,7 +10,7 @@ class CSBSyncTest extends TestCase
     public function setUp()
     {
         $this->CSB = $CSB = new CSB(
-            'https://dbz.staging.customersuccessbox.com',
+            'https://uat.customersuccessbox.com',
             'phpunit',
             'sync'
         );
