@@ -12,6 +12,12 @@ php >= 5.4
 composer require csb/php -vvv -no-dev --no-scripts --optimize-autoloader --ansi
 ```
 
+#### Update Package
+
+```composer log
+composer update csb/php -vvv -no-dev --no-scripts --optimize-autoloader --ansi
+```
+
 #### Initiate Package
 
 ##### For Laravel, Add this Code to register function of AppServiceProvider.php
