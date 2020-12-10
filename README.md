@@ -76,7 +76,7 @@ $CSB->user('Account1', 'User1', ['property1' => 'value1', 'property2' => 'value2
 
 [User Properties](https://developers.customersuccessbox.com/http-server-api/users)
 
-##### Subscription [subscription($accountID, $subscription, $properties = [])]
+##### Subscription [subscription($accountID, $subscriptionID, $properties = [])]
 
 ```php
 $CSB->subscription('Account1', 'Subscription1', ['property1' => 'value1', 'property2' => 'value2']);
@@ -93,7 +93,7 @@ $CSB->invoice(null, 'Subscription1', 'Invoice1', ['property1' => 'value1', 'prop
 
 [Invoice Properties](https://developers.customersuccessbox.com/http-server-api/invoices)
 
-##### Feature [feature($productID, $moduleID, $featureID, $total = 1, $accountID = null, $userID = null)]
+##### Feature [feature($accountID, $userID, $productID, $moduleID, $featureID, $total = 1)]
 
 ###### To Send Features to CSB
 

@@ -180,12 +180,12 @@ class CSB
     
     /**
      * @param string $accountID
-     * @param array  $traits
+     * @param array  $properties
      *
      * @return bool|TransportInterface
      * @throws CSBException
      */
-    public function account($accountID, $traits = [])
+    public function account($accountID, $properties = [])
     {
         if (empty($accountID)) {
             throw new CSBException('Invalid Account ID');
@@ -193,7 +193,7 @@ class CSB
         
         $item = array_merge([
                                 'account_id' => $accountID
-                            ], $traits);
+                            ], $properties);
         
         $item = json_encode($item);
         
@@ -203,12 +203,12 @@ class CSB
     /**
      * @param string $accountID
      * @param string $userID
-     * @param array  $traits
+     * @param array  $properties
      *
      * @return bool|TransportInterface
      * @throws CSBException
      */
-    public function user($accountID, $userID, $traits = [])
+    public function user($accountID, $userID, $properties = [])
     {
         if (empty($accountID)) {
             throw new CSBException('Invalid Account ID');
@@ -221,7 +221,7 @@ class CSB
         $item = array_merge([
                                 'account_id' => $accountID,
                                 'user_id'    => $userID
-                            ], $traits);
+                            ], $properties);
         
         $item = json_encode($item);
         
@@ -231,12 +231,12 @@ class CSB
     /**
      * @param string $accountID
      * @param string $subscriptionID
-     * @param array  $traits
+     * @param array  $properties
      *
      * @return bool|TransportInterface
      * @throws CSBException
      */
-    public function subscription($accountID, $subscriptionID, $traits = [])
+    public function subscription($accountID, $subscriptionID, $properties = [])
     {
         if (empty($accountID)) {
             throw new CSBException('Invalid Account ID');
@@ -249,7 +249,7 @@ class CSB
         $item = array_merge([
                                 'account_id'      => $accountID,
                                 'subscription_id' => $subscriptionID
-                            ], $traits);
+                            ], $properties);
         
         $item = json_encode($item);
         
@@ -260,7 +260,7 @@ class CSB
      * @param string|null $accountID
      * @param string|null $subscriptionID
      * @param string      $invoiceID
-     * @param array       $traits
+     * @param array       $properties
      *
      * @return bool|TransportInterface
      * @throws CSBException
@@ -269,7 +269,7 @@ class CSB
         $accountID = null,
         $subscriptionID = null,
         $invoiceID = null,
-        $traits = []
+        $properties = []
     ) {
         if (empty($accountID)) {
             if (empty($subscriptionID)) {
@@ -286,12 +286,12 @@ class CSB
             $item = array_merge([
                                     'account_id' => $accountID,
                                     'invoice_id' => $invoiceID
-                                ], $traits);
+                                ], $properties);
         } else {
             $item = array_merge([
                                     'subscription_id' => $subscriptionID,
                                     'invoice_id'      => $invoiceID
-                                ], $traits);
+                                ], $properties);
         }
         
         $item = json_encode($item);
