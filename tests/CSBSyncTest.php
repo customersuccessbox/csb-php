@@ -10,7 +10,7 @@ class CSBSyncTest extends TestCase
     public function setUp()
     {
         $this->CSB = $CSB = new CSB(
-            'https://uat.customersuccessbox.com',
+            'https://dbz.staging.customersuccessbox.com',
             'phpunit',
             'sync'
         );
@@ -58,7 +58,9 @@ class CSBSyncTest extends TestCase
     public function testAccountEvent()
     {
         try {
-            $isSent = $this->CSB->account('Account1', ['custom_Trait_1' => 123, 'custom_Trait_2' => 'Yes']);
+            $isSent = $this->CSB->account('Account1', [
+                'name' => 'Account1'
+            ]);
             
             if ($isSent) {
                 $this->assertTrue(true, 'Account Data Sent');
@@ -73,7 +75,10 @@ class CSBSyncTest extends TestCase
     public function testUserEvent()
     {
         try {
-            $isSent = $this->CSB->user('Account1', 'User1', ['custom_Trait_3' => 456, 'custom_Trait_4' => 'No']);
+            $isSent = $this->CSB->user('Account1', 'User1', [
+                'first_name' => 'FirstName 1',
+                'last_name' => 'LastName 1'
+            ]);
             
             if ($isSent) {
                 $this->assertTrue(true, 'User Data Sent');
@@ -85,16 +90,65 @@ class CSBSyncTest extends TestCase
         }
     }
     
+    public function testSubscriptionEvent()
+    {
+        try {
+            $isSent = $this->CSB->subscription('Account1', 'Subscription1', [
+                'mrr' => 1000
+            ]);
+            
+            if ($isSent) {
+                $this->assertTrue(true, 'Subscription Data Sent');
+            } else {
+                $this->assertTrue(false, 'Subscription Data Failed');
+            }
+        } catch (Exception $exception) {
+            $this->assertTrue(false, 'Subscription Data Failed');
+        }
+    }
+    
+    public function testInvoiceEvent()
+    {
+        try {
+            $isSent = $this->CSB->invoice('Account1', null, 'Invoice1', [
+                'status' => 'Paid'
+            ]);
+            
+            if ($isSent) {
+                $this->assertTrue(true, 'Invoice with Account Data Sent');
+            } else {
+                $this->assertTrue(false, 'Invoice with Account Data Failed');
+            }
+        } catch (Exception $exception) {
+            $this->assertTrue(false, 'Invoice with Account Data Failed');
+        }
+        
+        try {
+            $isSent = $this->CSB->invoice(null, 'Subscription1', 'Invoice1', [
+                'status' => 'Paid'
+            ]);
+            
+            if ($isSent) {
+                $this->assertTrue(true, 'Invoice with Subscription Data Sent');
+            } else {
+                $this->assertTrue(false,
+                                  'Invoice with Subscription Data Failed');
+            }
+        } catch (Exception $exception) {
+            $this->assertTrue(false, 'Invoice with Subscription Data Failed');
+        }
+    }
+    
     public function testFeatureEvent()
     {
         try {
             $isSent = $this->CSB->feature(
+                'Account1',
+                'User1',
                 'Product1',
                 'Module1',
                 'Feature1',
-                20,
-                'Account1',
-                'User1'
+                20
             );
             
             if ($isSent) {

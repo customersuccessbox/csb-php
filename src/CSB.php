@@ -28,11 +28,6 @@ class CSB
     /**
      * @var string
      */
-    protected $transport;
-    
-    /**
-     * @var string
-     */
     protected $accountID;
     
     /**
@@ -100,16 +95,6 @@ class CSB
     }
     
     /**
-     * Get CSB endpoint.
-     *
-     * @return string
-     */
-    public function getEndpoint()
-    {
-        return $this->endpoint;
-    }
-    
-    /**
      * Verify if api key is well formed.
      *
      * @param $value
@@ -131,68 +116,6 @@ class CSB
     }
     
     /**
-     * Get current API key.
-     *
-     * @return string
-     */
-    public function getApiKey()
-    {
-        return $this->apiKey;
-    }
-    
-    /**
-     * Get current transport method.
-     *
-     * @return string
-     */
-    public function getTransport()
-    {
-        return $this->transport;
-    }
-    
-    /**
-     * Set the preferred transport method.
-     *
-     * @param string $transport
-     *
-     * @return CSB
-     */
-    public function setTransport($transport)
-    {
-        $this->transport = $transport;
-        
-        return $this;
-    }
-    
-    /**
-     * @param string $accountID
-     * @param string $userID
-     *
-     * @return array
-     * @throws CSBException
-     */
-    private function checkForAccountAndUserID($accountID, $userID)
-    {
-        if (empty($accountID)) {
-            if (empty($this->accountID)) {
-                throw new CSBException('Please Provide Account ID or Use Login Function');
-            } else {
-                $accountID = $this->accountID;
-            }
-        }
-        
-        if (empty($userID)) {
-            if (empty($this->userID)) {
-                throw new CSBException('Please Provide User ID or Use Login Function');
-            } else {
-                $userID = $this->userID;
-            }
-        }
-        
-        return [$accountID, $userID];
-    }
-    
-    /**
      * @param $accountID
      * @param $userID
      *
@@ -201,8 +124,13 @@ class CSB
      */
     public function login($accountID, $userID)
     {
-        list($accountID, $userID) = $this->checkForAccountAndUserID($accountID,
-                                                                    $userID);
+        if (empty($accountID)) {
+            throw new CSBException('Invalid Account ID');
+        }
+        
+        if (empty($userID)) {
+            throw new CSBException('Invalid User ID');
+        }
         
         $item = [
             'account_id' => $accountID,
@@ -226,8 +154,13 @@ class CSB
      */
     public function logout($accountID = null, $userID = null)
     {
-        list($accountID, $userID) = $this->checkForAccountAndUserID($accountID,
-                                                                    $userID);
+        if (empty($accountID)) {
+            throw new CSBException('Invalid Account ID');
+        }
+        
+        if (empty($userID)) {
+            throw new CSBException('Invalid User ID');
+        }
         
         $item = [
             'account_id' => $accountID,
@@ -254,17 +187,13 @@ class CSB
      */
     public function account($accountID, $traits = [])
     {
-        if (!empty($accountID)) {
-            $this->accountID = $accountID;
-        } else {
+        if (empty($accountID)) {
             throw new CSBException('Invalid Account ID');
         }
         
         $item = array_merge([
                                 'account_id' => $accountID
                             ], $traits);
-        
-        $item = array_unique($item);
         
         $item = json_encode($item);
         
@@ -281,15 +210,18 @@ class CSB
      */
     public function user($accountID, $userID, $traits = [])
     {
-        list($accountID, $userID) = $this->checkForAccountAndUserID($accountID,
-                                                                    $userID);
+        if (empty($accountID)) {
+            throw new CSBException('Invalid Account ID');
+        }
+        
+        if (empty($userID)) {
+            throw new CSBException('Invalid User ID');
+        }
         
         $item = array_merge([
                                 'account_id' => $accountID,
                                 'user_id'    => $userID
                             ], $traits);
-        
-        $item = array_unique($item);
         
         $item = json_encode($item);
         
@@ -297,26 +229,102 @@ class CSB
     }
     
     /**
-     * @param string      $productID
-     * @param string      $moduleID
-     * @param string      $featureID
-     * @param int         $total
+     * @param string $accountID
+     * @param string $subscriptionID
+     * @param array  $traits
+     *
+     * @return bool|TransportInterface
+     * @throws CSBException
+     */
+    public function subscription($accountID, $subscriptionID, $traits = [])
+    {
+        if (empty($accountID)) {
+            throw new CSBException('Invalid Account ID');
+        }
+        
+        if (empty($subscriptionID)) {
+            throw new CSBException('Invalid User ID');
+        }
+        
+        $item = array_merge([
+                                'account_id'      => $accountID,
+                                'subscription_id' => $subscriptionID
+                            ], $traits);
+        
+        $item = json_encode($item);
+        
+        return $this->Transport->send('/api/v1_1/subscription', $item);
+    }
+    
+    /**
      * @param string|null $accountID
-     * @param string|null $userID
+     * @param string|null $subscriptionID
+     * @param string      $invoiceID
+     * @param array       $traits
+     *
+     * @return bool|TransportInterface
+     * @throws CSBException
+     */
+    public function invoice(
+        $accountID = null,
+        $subscriptionID = null,
+        $invoiceID = null,
+        $traits = []
+    ) {
+        if (empty($accountID)) {
+            if (empty($subscriptionID)) {
+                throw new CSBException('Invalid Account ID or Subscription ID');
+            }
+        }
+        
+        if (empty($invoiceID)) {
+            throw new CSBException('Invalid Invoice ID');
+        }
+        
+        
+        if (!empty($accountID)) {
+            $item = array_merge([
+                                    'account_id' => $accountID,
+                                    'invoice_id' => $invoiceID
+                                ], $traits);
+        } else {
+            $item = array_merge([
+                                    'subscription_id' => $subscriptionID,
+                                    'invoice_id'      => $invoiceID
+                                ], $traits);
+        }
+        
+        $item = json_encode($item);
+        
+        return $this->Transport->send('/api/v1_1/invoice', $item);
+    }
+    
+    /**
+     * @param string $accountID
+     * @param string $userID
+     * @param string $productID
+     * @param string $moduleID
+     * @param string $featureID
+     * @param int    $total
      *
      * @return bool|TransportInterface
      * @throws CSBException
      */
     public function feature(
+        $accountID,
+        $userID,
         $productID,
         $moduleID,
         $featureID,
-        $total = 1,
-        $accountID = null,
-        $userID = null
+        $total = 1
     ) {
-        list($accountID, $userID) = $this->checkForAccountAndUserID($accountID,
-                                                                    $userID);
+        if (empty($accountID)) {
+            throw new CSBException('Invalid Account ID');
+        }
+        
+        if (empty($userID)) {
+            throw new CSBException('Invalid User ID');
+        }
         
         if (empty($productID)) {
             throw new CSBException('Invalid Product ID');
