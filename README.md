@@ -9,13 +9,13 @@ php >= 5.4
 #### Install Package
 
 ```composer log
-composer require csb/php -vvv -no-dev --no-scripts --optimize-autoloader --ansi
+composer require csb/php -vvv --no-scripts --optimize-autoloader --ansi
 ```
 
 #### Update Package
 
 ```composer log
-composer update csb/php -vvv -no-dev --no-scripts --optimize-autoloader --ansi
+composer update csb/php -vvv --no-scripts --optimize-autoloader --ansi
 ```
 
 #### Initiate Package
@@ -60,35 +60,35 @@ $CSB->login('Account1', 'User1');
 $CSB->logout('Account1', 'User1');
 ```
 
-##### Account [account($accountID, $properties = [])]
+##### Account [account($accountID, $attributes = [])]
 
 ```php
-$CSB->account('Account1', ['property1' => 'value1', 'property2' => 'value2', 'custom_Field' => 'custom_value']);
+$CSB->account('Account1', ['attribute_1' => 'value1', 'attribute_2' => 'value2', 'custom_Field' => 'custom_value']);
 ```
 
 [Account Properties](https://developers.customersuccessbox.com/http-server-api/accounts)
 
-##### User [user($accountID, $userID, $properties = [])]
+##### User [user($accountID, $userID, $attributes = [])]
 
 ```php
-$CSB->user('Account1', 'User1', ['property1' => 'value1', 'property2' => 'value2', 'custom_Field' => 'custom_value']);
+$CSB->user('Account1', 'User1', ['attribute_1' => 'value1', 'attribute_2' => 'value2', 'custom_Field' => 'custom_value']);
 ```
 
 [User Properties](https://developers.customersuccessbox.com/http-server-api/users)
 
-##### Subscription [subscription($accountID, $subscriptionID, $properties = [])]
+##### Subscription [subscription($accountID, $subscriptionID, $attributes = [])]
 
 ```php
-$CSB->subscription('Account1', 'Subscription1', ['property1' => 'value1', 'property2' => 'value2']);
+$CSB->subscription('Account1', 'Subscription1', ['attribute_1' => 'value1', 'attribute_2' => 'value2']);
 ```
 
 [Subscription Properties](https://developers.customersuccessbox.com/http-server-api/subscriptions)
 
-##### Invoice [invoice($accountID = null, $subscriptionID = null, $invoiceID, $properties = [])]
+##### Invoice [invoice($accountID = null, $subscriptionID = null, $invoiceID, $attributes = [])]
 
 ```php
-$CSB->invoice('Account1', null, 'Invoice1', ['property1' => 'value1', 'property2' => 'value2']);
-$CSB->invoice(null, 'Subscription1', 'Invoice1', ['property1' => 'value1', 'property2' => 'value2']);
+$CSB->invoice('Account1', null, 'Invoice1', ['attribute_1' => 'value1', 'attribute_2' => 'value2']);
+$CSB->invoice(null, 'Subscription1', 'Invoice1', ['attribute_1' => 'value1', 'attribute_2' => 'value2']);
 ```
 
 [Invoice Properties](https://developers.customersuccessbox.com/http-server-api/invoices)
